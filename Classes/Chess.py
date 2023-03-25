@@ -7,12 +7,15 @@ class Cell(NamedTuple):
     r : int = -1
     c : int = -1
     
-# %----------------------------------------- Chess Classes ---------------------------------------------% #
+# %----------------------------------------- Chess Classes ---------------------------------------% #
 class Chess():
-    def __init__(self, startPos : str) -> None:
-        self.startPos = startPos
-        self.board    = self.makeBoard()
-        self.move_log = []
+    def __init__(self, START_POS_FEN : str) -> None:
+        self.START_POS_FEN = START_POS_FEN
+
+        self.move_log = []                  # Store Moves to Go back to
+        self.EMPTY_CELL = '  '              # Place Holder for an empty cell in 2D board list
+        
+        self.board = self.fen2board()
         
     def __str__(self):
         # Printing Board State to terminal
@@ -40,7 +43,7 @@ class Chess():
         
     # %---------------------------------------- Methods --------------------------------------% #
     # Purpose: Make Board
-    def makeBoard(self, startPos = ""):
+    def fen2board(self, START_POS_FEN = "") -> list[list[str]]:
         """
         Board is a 2D List of 8x8
         Piece = (w, b)x(R,N,B,K,Q,P)
@@ -48,12 +51,11 @@ class Chess():
             wP = white pawn
         """
         # Check if Position was Provided
-        if startPos == "":
-            startPos = self.startPos
+        if START_POS_FEN == "":
+            START_POS_FEN = self.START_POS_FEN
             
         board = []
-        emptySquare = ['  ']
-        for s in startPos.split('/'):
+        for s in START_POS_FEN.split('/'):
             row = []
             for c in s:
                 # Finished Board
@@ -62,7 +64,7 @@ class Chess():
                 
                 # Empty Squares ascii 49-56 <-> int 1-8
                 elif 48<ord(c) and ord(c)<57:
-                    row.extend(emptySquare * int(c))
+                    row.extend([self.EMPTY_CELL] * int(c))
                     
                 # Store the Black Pieces
                 elif c.islower():
@@ -74,9 +76,42 @@ class Chess():
             board.append(row)
         return board
 
-    # TODO Purpose: Move Piece
-    def MovePiece(self, cell_start, cell_end) -> None:
-        pass
+    # Purpose: Move Piece
+    def move_piece(self, cell_start : Cell, cell_end : Cell) -> None:
+        # Check if it is a repeated cell
+        if cell_start == cell_end:
+            return
+        
+        piece = self.get_piece(cell_start)
+        
+        # Check if destination is empty
+        if self.get_piece(cell_end) == self.EMPTY_CELL:
+            self.set_piece(piece, cell_end)
+            # TODO If statement for castling, promoting, enpassant
+        
+        # Take Opponent Piece
+        else:
+            self.set_piece(piece, cell_end)
+            # TODO add chess notation
+            
+        # Set starting cell to empty since we moved
+        self.set_piece(self.EMPTY_CELL, cell_start)
     
+    # TODO Purpose: Convert to Chess Notation
+    def move2notation(self, cell_start : Cell, cell_end : Cell) -> str:
+        return ""
+    
+    # Purpose: Get Piece from cell
+    def get_piece(self, cell : Cell) -> str:
+        return self.board[cell.r][cell.c]
+    
+    # Purpose: Put Piece in cell
+    def set_piece(self, piece : str, cell : Cell) -> None:
+        self.board[cell.r][cell.c] = piece
+    
+    # Purpose: Check if square is empty
+    def cell_isEmpty(self, cell : Cell) -> bool:
+        return self.get_piece(cell) == self.EMPTY_CELL
 # Todo: 
 # - makeBoard: Implement w KQkq - 0 1 part of FEN
+# - move_piece: castle, enpassant, promote

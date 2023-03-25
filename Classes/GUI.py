@@ -1,9 +1,8 @@
 # Purpose: Handle GUI
 # %------------------------------------------ Packages -------------------------------------------% #
 import pygame
-from typing import NamedTuple
-
-from Classes.Chess import Chess
+from Classes import Chess
+from typing  import NamedTuple
 
 # %------------------------------------------- Structs -------------------------------------------% #
 class Coords(NamedTuple):
@@ -41,18 +40,22 @@ class Window():
         self.clock  = pygame.time.Clock()
         
         # Load Pieces From Image Folder
-        self.LoadPieces()
+        self.load_piece_from_file()
         
-    # %---------------------------------------- Methods --------------------------------------% #
+    # %---------------------------------------- Reneder Methods --------------------------------------% #
     # Purpose: Render Window
-    def RenderBoard(self, board : list) -> None:
-        self.RenderBackground()
-        self.RenderPieces(board)
+    def render_window(self) -> None:
         self.clock.tick(self.SETTINGS.MAX_FPS)
         pygame.display.update()
-    
+        
+    # Purpose: Render the Entire Board + Pieces
+    def render_board(self, board : list[list[str]]) -> None:
+        self.render_background()
+        self.render_pieces(board)
+        self.render_window()
+
     # Purpose: Render Board
-    def RenderBackground(self) -> None:
+    def render_background(self) -> None:
         cs = self.SETTINGS.CELL_SIZE
         for r in range(self.SETTINGS.DIM):
             for c in range(self.SETTINGS.DIM):
@@ -61,7 +64,7 @@ class Window():
                                  pygame.Rect(c * cs, r * cs, 
                                                  cs,     cs))
     # Purpose: Render Pieces
-    def RenderPieces(self, board : list) -> None:
+    def render_pieces(self, board : list[list[str]]) -> None:
         cs = self.SETTINGS.CELL_SIZE
         for r in range(self.SETTINGS.DIM):
             for c in range(self.SETTINGS.DIM):
@@ -73,21 +76,29 @@ class Window():
                     self.screen.blit(self.IMAGES[piece],
                                      pygame.Rect(c * cs, r * cs, 
                                                      cs,     cs))
+    
+    # Purpose: Render Piece Moving by start->end click
+    def render_move(self, chess : Chess.Chess, pos_start : Coords, pos_end : Coords) -> None:
+        # Convert Coords to Cell position
+        cell_start = self.coord2cell(pos_start)
+        cell_end   = self.coord2cell(pos_end)
+        
+        # Move Piece
+        chess.move_piece(cell_start, cell_end)
+        
     # TODO Purpose: Derender Selected Piece
     def DerenderSelectedPiece(self, pos : Coords) -> None:
-        pass
-    
-    # TODO Purpose: Render Piece Moving by start->end click
-    def RenderMove(self, board : list, pos_start : Coords, pos_end : Coords) -> None:
-        pass
+        print(self.coord2cell(pos))
         
-    # Purpose: Resize Window based on User Event
-    def Resize(self, event) -> None:
+    # %---------------------------------------- Board Methods --------------------------------------% #
+    # Purpose: resize Window based on User Event
+    def resize(self, event) -> None:
         self.screen = pygame.display.set_mode((event.w, event.h),
                                                pygame.RESIZABLE)
-                    
+    
+    # %---------------------------------------- Helper Methods --------------------------------------% #
     # Purpose: Load PNG Pieces
-    def LoadPieces(self) -> None:
+    def load_piece_from_file(self) -> None:
         for piece in self.PIECES:
             path = f'Images/{self.SETTINGS.THEME.PIECE}_Theme/'
             
@@ -96,5 +107,9 @@ class Window():
             img = pygame.transform.smoothscale(img, (self.SETTINGS.CELL_SIZE, 
                                                      self.SETTINGS.CELL_SIZE))
             self.IMAGES[piece] = img
-       
-    
+            
+    # Purpose: Cursor Coordinates to Cell Position
+    def coord2cell(self, coord : Coords) -> Chess.Cell:
+        c = coord.X // self.SETTINGS.CELL_SIZE
+        r = coord.Y // self.SETTINGS.CELL_SIZE
+        return Chess.Cell(r,c)

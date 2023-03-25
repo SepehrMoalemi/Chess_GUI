@@ -16,12 +16,12 @@ def testing():
 # %-------------------------------------------- Main ---------------------------------------------% #
 def main():
     # Set Starting Position
-    startPos = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    START_POS_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     
     # Set GUI Settings
     DIM       = 8                               # Board of (DIM X DIM)
     LENGTH    = 512                             # Height and Width of the Board
-    CELL_SIZE = LENGTH//DIM      
+    CELL_SIZE = LENGTH//DIM       
     MAX_FPS   = 16
     
     # Set GUI Theme
@@ -40,8 +40,8 @@ def main():
                             THEME=THEME)
 
     # Run Game
-    game = Game(startPos, SETTINGS)
-    game.Run()
+    game = Game(START_POS_FEN, SETTINGS)
+    game.run()
     
     # ? ---- Testing ----- ? #
     # testing()
