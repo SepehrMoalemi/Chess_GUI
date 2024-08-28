@@ -6,12 +6,7 @@ from Classes.Driver import Game
 
 # %------------------------------------------ Functions ------------------------------------------% #
 def testing():
-        pos1 = [1, 3]
-        pos2 = [1,3]
-        coord1 = GUI.Coords(*pos1)
-        coord2 = GUI.Coords(*pos2)
-        print(coord1 == coord2)
-    # pass
+    pass
 
 # %-------------------------------------------- Main ---------------------------------------------% #
 def main():
@@ -44,7 +39,7 @@ def main():
     game.run()
     
     # ? ---- Testing ----- ? #
-    # testing()
+    testing()
 # %--------------------------------------------- Run ---------------------------------------------% #
 if __name__ == '__main__':
     print(f'{"Start":-^{50}}')

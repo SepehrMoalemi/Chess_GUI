@@ -19,6 +19,7 @@ class Game():
     # Purpose: run Game
     def run(self) -> None:
         running = True
+    
         # self.Window.RenderBoard(self.Chess.board)
         while running:
             for event in pygame.event.get():
